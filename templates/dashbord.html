@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SPP AI – Interactive Student Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --sidebar-bg: #0f172a;
+            --accent-blue: #38bdf8;
+            --bg-light: #f8fafc;
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        body { font-family: 'Inter', sans-serif; background: var(--bg-light); margin: 0; overflow-x: hidden; }
+
+        /* --- TRANSITIONS & ANIMATIONS --- */
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-up { animation: slideInUp 0.8s ease forwards; }
+
+        /* Sidebar Styling */
+        .sidebar { width: 260px; height: 100vh; position: fixed; background: var(--sidebar-bg); color: white; padding: 2rem; z-index: 100; }
+        .sidebar h4 { font-weight: 800; color: var(--accent-blue); margin-bottom: 2.5rem; }
+        
+        .nav-link { 
+            color: #94a3b8; padding: 12px 15px; border-radius: 12px; margin-bottom: 8px; 
+            transition: var(--transition); display: flex; align-items: center; gap: 12px; text-decoration: none;
+        }
+        
+        .nav-link:hover { 
+            background: rgba(56, 189, 248, 0.1); 
+            color: var(--accent-blue);
+            transform: translateX(8px);
+        }
+        
+        .nav-link.active { background: #1e293b; color: var(--accent-blue); box-shadow: inset 4px 0 0 var(--accent-blue); }
+
+        /* Main Area */
+        .main { margin-left: 260px; padding: 2.5rem; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        
+        /* Interactive Cards */
+        .card { 
+            border: none; border-radius: 20px; box-shadow: var(--card-shadow); 
+            background: white; transition: var(--transition);
+        }
+        
+        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .card-header { background: transparent; border-bottom: 1px solid #f1f5f9; padding: 1.5rem; font-weight: 700; }
+
+        /* EXCLUSIVE: Grade Simulator Slider */
+        .simulator-range { 
+            appearance: none; -webkit-appearance: none; width: 100%; height: 8px; 
+            border-radius: 5px; background: #e2e8f0; outline: none; 
+        }
+        .simulator-range::-webkit-slider-thumb { 
+            -webkit-appearance: none; width: 20px; height: 20px; 
+            border-radius: 50%; background: var(--accent-blue); cursor: pointer; 
+        }
+
+        /* Status Colors */
+        .progress { height: 10px; border-radius: 20px; background: #f1f5f9; }
+        .status-tag { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+        .tag-risk { background: #fee2e2; color: #ef4444; }
+
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h4>🎓 SPP AI</h4>
+    <nav>
+       <a href="{{ url_for('dashboard') }}" class="nav-link active">
+  <i class="bi bi-grid-1x2-fill"></i> Dashboard
+</a>
+        <a href="#" class="nav-link"><i class="bi bi-cpu"></i> Prediction Engine</a>
+        <a href="#" class="nav-link"><i class="bi bi-chat-heart"></i> Wellness Pulse</a>
+        <a href="{{ url_for('course') }}" class="nav-link">
+  <i class="bi bi-calendar4-event"></i> Smart Schedule
+</a>
+
+    </nav>
+</div>
+
+<div class="main">
+    <header class="d-flex justify-content-between align-items-center mb-5 animate-up" style="animation-delay: 0.1s;">
+        <div>
+            <h2 class="fw-bold">Welcome back, Chaitanya! 👋</h2>
+            <p class="text-muted">Analyzing your data for <b>Feb 2026</b></p>
+        </div>
+        <div class="card p-3 d-flex flex-row align-items-center gap-3 shadow-sm border-0">
+            <div class="text-end text-muted small">AI Sync:<br><b>98% Accurate</b></div>
+            <i class="bi bi-check-circle-fill text-success fs-4"></i>
+        </div>
+    </header>
+
+    <div class="dashboard-grid">
+        
+        <div style="grid-column: span 2;" class="animate-up" style="animation-delay: 0.2s;">
+            <div class="card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0">Attendance Health</h5>
+                    <span class="status-tag tag-risk">Action Required</span>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <label class="small text-muted mb-1">Mathematics</label>
+                        <div class="h4 fw-bold">85%</div>
+                        <div class="progress"><div class="progress-bar bg-info" style="width: 85%"></div></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="small text-muted mb-1">Physics</label>
+                        <div class="h4 fw-bold">70%</div>
+                        <div class="progress"><div class="progress-bar bg-warning" style="width: 70%"></div></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="small text-muted mb-1">Computer Science</label>
+                        <div class="h4 fw-bold text-danger">55%</div>
+                        <div class="progress"><div class="progress-bar bg-danger" style="width: 55%"></div></div>
+                    </div>
+                </div>
+                <p class="mt-4 small text-muted"><i class="bi bi-info-circle me-1"></i> Missing 2 more CS classes will trigger a detention warning.</p>
+            </div>
+        </div>
+
+        <div style="grid-column: span 1;" class="animate-up" style="animation-delay: 0.3s;">
+            <div class="card p-4 h-100 bg-primary text-white shadow-lg">
+                <h5 class="fw-bold mb-3">Goal Simulator 🎯</h5>
+                <p class="small opacity-75">Slide to see how extra study hours impact your predicted CGPA.</p>
+                <div class="my-4">
+                    <label class="small">Extra Study: <b id="hoursVal">5</b> hrs/week</label>
+                    <input type="range" class="simulator-range mt-2" id="studyRange" min="0" max="20" value="5">
+                </div>
+                <div class="text-center p-3 bg-white bg-opacity-10 rounded-3">
+                    <span class="small d-block">Predicted Semester CGPA</span>
+                    <h1 class="fw-bold mb-0" id="predictedCGPA">7.42</h1>
+                </div>
+            </div>
+        </div>
+
+        <div style="grid-column: span 2;" class="animate-up" style="animation-delay: 0.4s;">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <span>Performance Analytics</span>
+                    <i class="bi bi-three-dots"></i>
+                </div>
+                <div class="card-body">
+                    <canvas id="predictionChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div style="grid-column: span 1;" class="animate-up" style="animation-delay: 0.5s;">
+            <div class="card p-4">
+                <h6 class="fw-bold mb-3">Wellness Pulse <i class="bi bi-heart-pulse-fill text-danger"></i></h6>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="flex-grow-1">
+                        <span class="small text-muted">Burnout Risk</span>
+                        <div class="progress mt-1" style="height: 6px;"><div class="progress-bar bg-success" style="width: 20%"></div></div>
+                    </div>
+                    <span class="ms-3 badge bg-success-subtle text-success">Low</span>
+                </div>
+                <p class="small text-muted italic">"Your streak is high, but sleep data suggests resting this weekend."</p>
+                <button class="btn btn-sm btn-outline-primary w-100 mt-2">View Mental Health Insights</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // 1. Prediction Chart
+    const ctx = document.getElementById('predictionChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            datasets: [{
+                label: 'Learning Velocity',
+                data: [65, 72, 68, 82],
+                borderColor: '#38bdf8',
+                backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: false, display: false }, x: { grid: { display: false } } }
+        }
+    });
+
+    // 2. Interactive Simulator Logic
+    const slider = document.getElementById('studyRange');
+    const hoursVal = document.getElementById('hoursVal');
+    const cgpaDisplay = document.getElementById('predictedCGPA');
+
+    slider.oninput = function() {
+        hoursVal.innerHTML = this.value;
+        // Simple AI Formula Simulation: Base 6.5 + (hours * 0.12)
+        let newCGPA = (6.5 + (this.value * 0.12)).toFixed(2);
+        cgpaDisplay.innerHTML = newCGPA;
+        
+        // Dynamic Color Shift
+        if(newCGPA > 8.5) cgpaDisplay.style.color = "#4ade80"; 
+        else cgpaDisplay.style.color = "white";
+    }
+</script>
+
+</body>
+</html>
